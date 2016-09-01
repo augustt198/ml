@@ -1,0 +1,21 @@
+# vim
+*.swo
+*.swp
+
+# python
+*.pyc
+
+# big files
+data/mnist
+
+# notebooks
+*.ipynb
+
+# saved models
+models/
+
+# logging
+logs/
+
+# mac stuff
+.DS_Store
