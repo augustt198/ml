@@ -6,9 +6,10 @@
 static PyObject*
 convolution(PyObject *dummy, PyObject *args) {
     PyObject *volumeObj = NULL, *kernelObj = NULL;
+    int stride = 1;
 
-    if (!PyArg_ParseTuple(args, "O!O!", &PyArray_Type, &volumeObj,
-        &PyArray_Type, &kernelObj)) return NULL;
+    if (!PyArg_ParseTuple(args, "O!O!|i", &PyArray_Type, &volumeObj,
+        &PyArray_Type, &kernelObj, &stride)) return NULL;
 
     PyArrayObject *volume = NULL, *kernel = NULL, *out = NULL;
 
@@ -35,20 +36,31 @@ convolution(PyObject *dummy, PyObject *args) {
         kernel_h        = kernel->dimensions[2],
         kernel_w        = kernel->dimensions[3];
 
+    // make sure stride is valid
+    if (stride < 1) {
+        PyErr_SetString(PyExc_TypeError, "Stride must be >= 1");
+    } else if ((vol_h - kernel_h) % stride != 0 || (vol_w - kernel_w) % stride != 0) {
+        PyErr_SetString(PyExc_TypeError, "Stride is not valid");
+    }
+
     if (vol_chns != kernel_in_chns) {
         PyErr_SetString(PyExc_TypeError, "Volume and kernel must have same number of input channels");
         return NULL;
     }
 
     // shape of output volume
-    npy_intp out_shape[3] = {kernel_out_chns, vol_h - kernel_h + 1, vol_w - kernel_w + 1};
+    npy_intp out_shape[3] = {
+        kernel_out_chns,
+        (vol_h - kernel_h)/stride + 1,
+        (vol_w - kernel_w)/stride + 1
+    };
     PyObject *outObj = PyArray_SimpleNew(3, out_shape, NPY_DOUBLE);
     out = (PyArrayObject*) PyArray_FROM_OTF(outObj, NPY_DOUBLE, NPY_ARRAY_IN_ARRAY);
     if (!out) return NULL;
 
     for (int n = 0; n < kernel_out_chns; n++) {
-        for (int y = 0; y <= vol_h - kernel_h; y++) {
-            for (int x = 0; x <= vol_w - kernel_w; x++) {
+        for (int y = 0; y <= vol_h - kernel_h; y += stride) {
+            for (int x = 0; x <= vol_w - kernel_w; x += stride) {
 
                 double sum = 0.0;
                 for (int chn = 0; chn < vol_chns; chn++) {
@@ -61,7 +73,7 @@ convolution(PyObject *dummy, PyObject *args) {
                     }
                 }
 
-                double *res = (double*) PyArray_GETPTR3(out, n, y, x);
+                double *res = (double*) PyArray_GETPTR3(out, n, y/stride, x/stride);
                 *res = sum;
             }
         }
