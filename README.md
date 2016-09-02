@@ -2,12 +2,21 @@
 
 Machine learning framework written from scratch.
 
+The goal is to keep the code simple and readable (the core library is ~300 lines) and written mostly
+in Python (convolution is implemented in C to avoid a major bottleneck).
+
 ## Installing
 
 - `git clone` the project somewhere
-- run `./setup_data` to download datasets (if you want to run the examples)
+- `python setup.py install` to build C extensions and install
+- `./setup_data` to download datasets (if you want to run the examples)
 
-## Using
+## Examples
+
+- `mnist_fc_nn.py` trains a fully connected neural network on MNIST data. You should see ~96% accuracy.
+- `mnist_cnn.py` trains a convnet on MNIST data. You should see 98% or higher accuracy.
+
+## Usage
 
 The `ml.nn` module is used to create and train neural networks.
 
