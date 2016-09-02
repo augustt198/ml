@@ -1,4 +1,5 @@
 import numpy as np
+import ml.utils
 
 class WeightLayer:
 
@@ -183,7 +184,10 @@ class ConvLayer:
 
         self.cached_bottom = padded
 
-        return ConvLayer.convolution(padded, self.weights, self.biases)
+        Z = ml.utils.convolution(padded, self.weights)
+        # apply biases on each output channel
+        Z += self.biases.reshape(Z.shape[0], 1, 1).repeat(Z.shape[1], axis=1).repeat(Z.shape[2], axis=2)
+        return Z
 
     def backward(self, top_diff):
         top_diff_fsize = top_diff.shape[1]
@@ -195,7 +199,7 @@ class ConvLayer:
         for i, j in np.ndindex(self.weights.shape[:2]):
             in_map = self.cached_bottom[[j]]
             diff_map = np.array([ top_diff[[i]] ])
-            k_slice = ConvLayer.convolution(in_map, diff_map)
+            k_slice = ml.utils.convolution(in_map, diff_map)
             self.weights_grad[i,j] = k_slice[0]
 
         pad_amt_h = self.weights.shape[2] - 1
@@ -207,7 +211,7 @@ class ConvLayer:
         flipped_weights = self.weights[:, :, ::-1, ::-1]
         # reverse channel modification
         flipped_weights = flipped_weights.swapaxes(0, 1)
-        input_grad = ConvLayer.convolution(padded_top, flipped_weights)
+        input_grad = ml.utils.convolution(padded_top, flipped_weights)
 
         return input_grad
 

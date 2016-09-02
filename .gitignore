@@ -4,6 +4,8 @@
 
 # python
 *.pyc
+.idea
+build
 
 # big files
 data/mnist

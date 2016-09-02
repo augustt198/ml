@@ -4,6 +4,9 @@
 # - if an argument is given, the trained Net object
 #   will be saved to that path
 
+import sys
+sys.path.pop(0) # hax
+
 import ml.datasets
 from ml.nn import *
 
@@ -46,8 +49,8 @@ train_in, train_out = process_dataset(train_in, train_out)
 train_accuracy = net.accuracy(train_in, train_out)
 print("Initial training accuracy: %f" % train_accuracy)
 
-# train using gradient descent for 3 epochs
-net.train_gd(train_in, train_out, 0.01, 60000 * 3)
+# train using gradient descent for 30 epochs
+net.train_gd(train_in, train_out, 0.001, 60000 * 30)
 
 train_accuracy = net.accuracy(train_in, train_out)
 print("Final Training accuracy: %f" % train_accuracy)
@@ -61,9 +64,9 @@ test_accuracy = net.accuracy(test_in, test_out)
 print("Test accuracy: %f" % test_accuracy)
 
 # Save net
+import pickle
+import sys
 if len(sys.argv) > 1:
-    import pickle
-    import sys
     print("Saving network")
     with open(sys.argv[1], 'wb') as f:
         pickle.dump(net, f, pickle.HIGHEST_PROTOCOL)
