@@ -9,7 +9,7 @@ in Python (convolution is implemented in C to avoid a major bottleneck).
 
 - `git clone` the project somewhere
 - `python setup.py install` to build C extensions and install
-- `./setup_data` to download datasets (if you want to run the examples)
+- `./setup_data` to download datasets (if you want to run the examples). This will download about 175 MB.
 
 ## Examples
 
