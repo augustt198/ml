@@ -83,7 +83,7 @@ class TanhLayer:
         return top_diff * grad
 
 class SoftmaxLayer:
-    
+
     # compute softmax:
     # h_i = exp(z_1) / sum(exp(z))
     def forward(self, bottom):
@@ -120,7 +120,7 @@ class DropoutLayer:
     def backward(self, top_diff):
         top_diff[self.mask] = 0
         return top_diff
-        
+
 
 class SquaredLoss:
     def __init__(self):
@@ -146,8 +146,7 @@ class ConvLayer:
 
     def init_parameters(self):
         self.weights = np.random.random((self.nfilters, self.in_depth, self.fsize, self.fsize))
-        self.weights /= self.weights.size
-        self.biases = np.random.random((self.nfilters)) / self.nfilters
+        self.biases = np.random.random((self.nfilters))
 
     # - `V` is the 3D input volume, indexed by V[channel, y, x]
     # - `K` is the 4D kernel stack, indexed by K[out_channel, in_channel, y, x]
@@ -173,7 +172,7 @@ class ConvLayer:
                     val = np.sum(extent * kernel) + bias
 
                     Z[n, y, x] = val
-        
+
         return Z
 
     # computes a convolution on the bottom volume
@@ -235,7 +234,7 @@ class PoolLayer:
         self.grad = np.zeros(bottom.shape)
 
         y_max_pool = bottom.reshape(chns, h / bs, bs, w).max(axis=2)
-        max_pool = y_max_pool.reshape(chns, h / bs, w / bs, bs).max(axis=3) 
+        max_pool = y_max_pool.reshape(chns, h / bs, w / bs, bs).max(axis=3)
 
         max_pool_upscaled = max_pool.repeat(bs, axis=1).repeat(bs, axis=2)
         self.grad = np.equal(bottom, max_pool_upscaled).astype('int')
@@ -257,7 +256,7 @@ class UnfurlLayer:
         return top_diff.reshape(self.original_shape)
 
 class CrossEntropyLoss:
-    
+
     # cross entropy loss:
     # J = -y*log(h) -(1 - y)*log(1 - h)
     def forward(self, bottom):
@@ -288,7 +287,7 @@ class Net:
         for layer in reversed(self.layers):
             diff = layer.backward(diff)
         return diff
-    
+
     # train using gradient descent
     def train_gd(self, X, Y, lr, iters=50000, debug=True):
         index = 0

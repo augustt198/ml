@@ -3,15 +3,27 @@
 # Setup data files
 
 MNIST_PATH=data/mnist
-mkdir -p $MNIST_PATH
+if [ ! -d "$MNIST_PATH" ]; then
+    mkdir -p $MNIST_PATH
 
-wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz -O $MNIST_PATH/training_imgs.gz
-gunzip $MNIST_PATH/training_imgs.gz
-wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz -O $MNIST_PATH/training_labels.gz
-gunzip $MNIST_PATH/training_labels.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz -O $MNIST_PATH/test_imgs.gz
-gunzip $MNIST_PATH/test_imgs.gz
-wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz -O $MNIST_PATH/test_labels.gz
-gunzip $MNIST_PATH/test_labels.gz
+    wget http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz -O $MNIST_PATH/training_imgs.gz
+    gunzip $MNIST_PATH/training_imgs.gz
+    wget http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz -O $MNIST_PATH/training_labels.gz
+    gunzip $MNIST_PATH/training_labels.gz
+    wget http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz -O $MNIST_PATH/test_imgs.gz
+    gunzip $MNIST_PATH/test_imgs.gz
+    wget http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz -O $MNIST_PATH/test_labels.gz
+    gunzip $MNIST_PATH/test_labels.gz
 
-echo "MNIST downloaded!"
+    echo "MNIST downloaded!"
+fi
+
+CIFAR10_PATH=data/cifar10
+if [ ! -d "$CIFAR10_PATH" ]; then
+    mkdir -p $CIFAR10_PATH
+
+    wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz -O $CIFAR10_PATH/cifar-10-python.tar.gz
+    tar zxvf $CIFAR10_PATH/cifar-10-python.tar.gz -C $CIFAR10_PATH --strip-components=1
+
+    echo "CIFAR-10 downloaded!"
+fi

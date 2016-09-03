@@ -9,6 +9,7 @@ build
 
 # big files
 data/mnist
+data/cifar10
 
 # notebooks
 *.ipynb

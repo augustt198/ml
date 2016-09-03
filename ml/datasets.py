@@ -21,8 +21,8 @@ def house_prices():
     X = np.genfromtxt(fname, delimiter=',', usecols=0)
     m = X.shape[0]
     X = X.reshape((m, 1))
-    X = np.c_[np.ones(m), X] # bias row 
-    
+    X = np.c_[np.ones(m), X] # bias row
+
     Y = np.genfromtxt(fname, delimiter=',', usecols=1)
     Y = Y.reshape((m, 1))
 
@@ -69,3 +69,30 @@ def load_mnist(dataset="training", digits=np.arange(10)):
         labels[i] = lbl[ind[i]]
 
     return images, labels
+
+def _cifar10(fname):
+    fname = os.path.join("data/cifar10", fname)
+    import pickle
+    f = open(fname, 'rb')
+    dict = pickle.load(f)
+    f.close()
+
+    imgs = dict['data'].reshape(10000, 3, 32, 32)
+    labels = np.eye(10)[dict['labels']].reshape(len(dict['labels']), 10, 1)
+    return imgs, labels
+
+# concat batches together
+def load_cifar10_training():
+    imgs = np.zeros((5*10000, 3, 32, 32))
+    labels = np.zeros((5*10000, 10, 1))
+    for i in range(1, 6):
+        fname = 'data_batch_' + str(i)
+        img_batch, label_batch = _cifar10(fname)
+        imgs[(i-1)*10000:i*10000] = img_batch
+        labels[(i-1)*10000:i*10000] = label_batch
+
+    return imgs, labels
+
+
+def load_cifar10_test():
+    return _cifar10('test_batch')
